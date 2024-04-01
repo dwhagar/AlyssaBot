@@ -1,7 +1,7 @@
-mod log;
-mod config;
 use std::env;
 use clap::Parser;
+mod log;
+mod config;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -14,6 +14,8 @@ struct Args {
     #[arg(short, long)] // Note: No 'value_name' is needed here
     config: Option<String>,
 }
+
+struct Config(Option<&String>);
 
 fn main() {
     let args = Args::parse(); // Parse the arguments using 'clap'
@@ -29,6 +31,14 @@ fn main() {
     if let Some(level) = args.verbosity {
         config.set_verbosity(level)?;
     }
+
+    let mut log = log::Log::new(verbosity_level); // Create your Log object
+
+    let mut config = Config::new(Some(&config_file))?
+        .validate_file()?
+        .validate_json()?;
+
+    config.load_config()?;
 
     // ... (rest of your program logic)
 }

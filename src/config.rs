@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::fs;
 use url::Url;
 use serde::{Deserialize, Serialize}; // For JSON handling
@@ -24,7 +24,7 @@ impl Config {
         Ok(config)
     }
 
-    fn validate_config_file(&self) -> Result<(), std::io::Error> {
+    fn validate_file(&self) -> Result<(), std::io::Error> {
         let path = Path::new(&self.settings_file);
 
         // 1. Check if the path exists
@@ -43,11 +43,12 @@ impl Config {
             ));
         }
 
-        // 3. Attempt a test write (optional, but highly recommended)
-        let mut test_file = fs::OpenOptions::new()
-            .write(true)
-            .open(&path)?;
-        // Note: You might consider immediately deleting a test file, or writing to a known-temporary location
+        Ok(())
+    }
+
+    fn validate_json(&self) -> Result<(), serde_json::Error> {
+        let config_str = fs::read_to_string(&self.settings_file)?;
+        serde_json::from_str(&config_str)?; // Attempt deserialization
 
         Ok(())
     }

@@ -26,12 +26,12 @@ impl Display for LogLevel {
     }
 }
 
-struct Log {
+pub(crate) struct Log {
     verbosity: u8,
 }
 
 impl Log {
-    fn new(verbosity: u8) -> Log {
+    pub(crate) fn new(verbosity: u8) -> Log {
         Log { verbosity }
     }
 
